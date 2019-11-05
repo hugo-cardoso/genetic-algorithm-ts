@@ -31,28 +31,23 @@ export default class Main {
             }
 
             for(let i = 0; i < (index > 1 ? (this.limit - 1) : this.limit); i++) {
-                this.population.add(ChromoUtils.generateRandomChromo());
+                let chromo = ChromoUtils.generateRandomChromo();
+
+                const chromoSearch: string = SearchUtils.search(this.result);
+                const chromoResult: string = SearchUtils.verify(chromoSearch, this.result, this.target);
+                const chromoScore: number = SearchUtils.calculateScore(chromoResult);
+
+                chromo.result = chromoResult;
+                chromo.score = chromoScore;
+
+                this.population.add(chromo);
+
+                console.log(`${ index }:${ i } - ${ chromoSearch } - ${ chromo.id }`);
             }
 
-             let newPopulation: Chromos = new Chromos;
-             this.population.list().forEach((chromo, chromoIndex) => {
+             this.population = ChromoUtils.categorizeChromos(this.population);
 
-                 const chromoSearch: string = SearchUtils.search(this.result);
-                 const chromoResult: string = SearchUtils.verify(chromoSearch, this.result, this.target);
-                 const chromoScore: number = SearchUtils.calculateScore(chromoResult);
-
-                 chromo.result = chromoResult;
-                 chromo.score = chromoScore;
-
-                 newPopulation.add(chromo);
-
-                 console.log(`${ index }:${ chromoIndex } - ${ chromoSearch } - ${ chromo.id }`);
-             });
-
-             newPopulation = ChromoUtils.categorizeChromos(newPopulation);
-
-             this.population = newPopulation;
-             this.result = newPopulation.list()[0].result;
+             this.result = this.population.list()[0].result;
              
              if( this.result == this.target ) {
                 this.finished = true;
